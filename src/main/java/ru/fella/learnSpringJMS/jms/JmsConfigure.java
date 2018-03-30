@@ -2,6 +2,7 @@ package ru.fella.learnSpringJMS.jms;
 
 import com.ibm.mq.jms.MQQueueConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 /**
  * Created by efischenko on 29.03.2018.
  */
+@Data
 @Configuration
 public class JmsConfigure {
     @Value("${ibm.mq.host}")
