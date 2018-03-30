@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
+import org.springframework.jms.support.converter.MarshallingMessageConverter;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import javax.xml.bind.Marshaller;
@@ -31,24 +32,6 @@ public class JmsConfigure {
     private String username;
     @Value("${ibm.mq.password}")
     private String password;
-
-    @Bean
-    public Jaxb2Marshaller marshall(@Value("fella.ru") String contextPath, @Value("xsd/Person.xsd") Resource schemaLocation) {
-        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-
-        //Задаем package где искать сгенерированные классы
-        marshaller.setContextPath(contextPath);
-        //Xsd для валидации xml
-        marshaller.setSchema(schemaLocation);
-
-        HashMap<String, Object> properties = new HashMap<>();
-        //Свойство задающее pretty print xml
-        properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-        marshaller.setMarshallerProperties(properties);
-        return marshaller;
-    }
-
 
     //Настройка подключения к IBM WebSphere MQ в соответствии с источником
     @Bean
@@ -77,7 +60,7 @@ public class JmsConfigure {
         return userCredentialsConnectionFactoryAdapter;
     }
 
-// Настройка CachingConnectionFactory из Spring документации
+    // Настройка CachingConnectionFactory из Spring документации
     @Bean
     @Primary
     public CachingConnectionFactory cachingConnectionFactory(UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter) {
@@ -86,6 +69,32 @@ public class JmsConfigure {
         cachingConnectionFactory.setSessionCacheSize(50);
         cachingConnectionFactory.setReconnectOnException(true);
         return cachingConnectionFactory;
+    }
+
+    ///TУТ НАСТРОЙКА КОНВЕРТИРОВАНИЯ XML в ОБЪЕКТ И ОБРАТНО И ПОДКЛЮЧЕНИЯ К JMS TEMPLATE
+
+    @Bean
+    public MarshallingMessageConverter getMarshallingMessageConverter(Jaxb2Marshaller marshaller) {
+        //Подставляем в реализацию наш сгенерированный Jaxb2Marshaller
+        return  new MarshallingMessageConverter(marshaller);
+    }
+
+
+    @Bean
+    public Jaxb2Marshaller getJaxb2Marshaller(@Value("fella.ru") String contextPath, @Value("xsd/Person.xsd") Resource schemaLocation) {
+        Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
+
+        //Задаем package где искать сгенерированные классы
+        marshaller.setContextPath(contextPath);
+        //Xsd для валидации xml
+        marshaller.setSchema(schemaLocation);
+
+        HashMap<String, Object> properties = new HashMap<>();
+        //Свойство задающее pretty print xml
+        properties.put(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        marshaller.setMarshallerProperties(properties);
+        return marshaller;
     }
 
 

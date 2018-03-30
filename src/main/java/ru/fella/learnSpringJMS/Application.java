@@ -1,5 +1,6 @@
 package ru.fella.learnSpringJMS;
 
+import fella.ru.Person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,6 +23,10 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        jmsTemplate.send("ELLA.TASK", s -> s.createTextMessage("hello world"));
+        Person person = new Person();
+        person.setFirstname("Ella");
+        person.setLastname("Fischenko");
+        jmsTemplate.convertAndSend("ELLA.TASK", person);
+
     }
 }
