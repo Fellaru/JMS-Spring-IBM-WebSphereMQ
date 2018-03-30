@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  */
 //This class named in Spring Doc ->  Asynchronous reception: Message-Driven POJOs
 @Component
-public class ExampleMDPs {
+public class PersonConsumer {
 
     // Annotation-driven listener endpoints
     @JmsListener(destination = "${queu.name}")
